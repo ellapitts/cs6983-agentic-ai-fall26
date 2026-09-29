@@ -6,17 +6,25 @@ notebook global. Files have no globals to lean on; dependencies are passed in.
 """
 
 from typing import Literal
+from unittest import result
 
 from pydantic import BaseModel, Field
 
-# TODO: paste the TicketRecord class from section 7 here
-
+class TicketRecord(BaseModel):
 
 TICKETS = []
 
 
 def file_ticket(model, result):
     """Extract a structured record from a finished conversation and save it."""
-    # TODO: paste the body of file_ticket from section 7 here.
-    # It already works unchanged — model now arrives as the parameter above.
-    pass
+    TICKETS = []
+    """Extract a structured record from a finished conversation and save it."""
+    transcript = "\n".join(f"{type(m).__name__}: {m.text}" for m in result["messages"] if m.text)
+    record = model.with_structured_output(TicketRecord).invoke(
+        f"Create a ticket record for this support conversation:\n\n{transcript}")
+    TICKETS.append(record)
+    return record
+
+file_ticket(result)
+
+TICKETS = []

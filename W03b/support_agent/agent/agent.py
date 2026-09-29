@@ -36,9 +36,14 @@ model = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite")
 # from langchain_openrouter import ChatOpenRouter
 # model = ChatOpenRouter(model="google/gemma-4-31b-it:free", max_retries=4)
 
-# TODO: paste the create_agent(...) call from section 4 here.
+# DONE: paste the create_agent(...) call from section 4 here.
 # Name the result `support_agent` and keep the checkpointer.
-support_agent = ...
+support_agent = create_agent(
+    model=model,
+    tools=TOOLS,
+    system_prompt=SYSTEM_PROMPT,
+    checkpointer=InMemorySaver()
+)
 
 
 def ask(text: str, thread: str) -> dict:

@@ -21,6 +21,8 @@ try:
 except ImportError:
     pass
 
+import os
+
 from agentui import GradioUI
 
 from agent.agent import support_agent
@@ -34,4 +36,7 @@ ui = GradioUI(support_agent,
 demo = ui.interface()
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(server_name="0.0.0.0",
+            server_port=int(os.environ.get("PORT", 7860))))
+
+    
