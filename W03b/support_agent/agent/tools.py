@@ -3,6 +3,10 @@
 Transfer target for W03b.1 sections 1 and 2.
 """
 
+from datetime import datetime, date
+
+from langchain.tools import tool
+
 # ---- section 1: the scenario and the data -----------------------------------
 ORDERS = {
     "HT-1001": {"item": "Wireless headphones", "status": "delivered", "delivered_on": "2026-09-05", "price": 79.99},
@@ -38,8 +42,25 @@ def look_up_order(order_id: str) -> str:
     #return order info as string
     return f"Your order id: {order_id.upper()}"
 
-# When everything above is in place, uncomment:
-# TOOLS = [look_up_order, check_return_eligibility, search_faq, escalate_to_human]
+@tool
+def check_return_eligibility(order_id: str) -> str:
+    """Check whether an order can still be returned under the 30-day policy. Takes the order id."""
+
+    order = ORDERS.get(order_id.upper())
+
+    if order is None:
+        return f"No order found with id {order_id}."
+    if order["status"] != "delivered":
+        return f"Order {order_id} has not been delivered yet, so the return window has not started."
+
+    # Date parsing and eligibility check
+    delivered = datetime.strptime(order["delivered_on"], "%Y-%m-%d").date()
+    days = (date.today() - delivered).days
+
+    if days <= RETURN_POLICY_DAYS:
+        return f"Eligible: delivered {days} days ago; returns are accepted within {RETURN_POLICY_DAYS} days of delivery."
+    return f"Not eligible: delivered {days} days ago, which is past the {RETURN_POLICY_DAYS}-day window."
+
 @tool
 def search_faq(question: str) -> str:
     """Answer general questions about shipping, returns, warranty, or support hours from the store FAQ."""
